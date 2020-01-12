@@ -5,25 +5,31 @@ def knapsack(items, capacity):
     selected_pizzas = []
     possible_count = 0
 
-    for item in items:
-        if item not in selected_pizzas:
+    for (index, item) in enumerate(items):
+        if not selected_pizzas:
             possible_count += item
-            selected_pizzas.append(item)
-            if possible_count > capacity:
-                # print(possible_count, selected_pizzas)
-                break
+            selected_pizzas.append((index, item))
+
+        elif item != selected_pizzas[-1]:
+            possible_count += item
+            selected_pizzas.append((index, item))
+
+        if possible_count > capacity:
+            break
 
     len_selected = len(selected_pizzas)
-    for index in range(len_selected):
+    for pizza in selected_pizzas:
+        index = pizza[0]
+        item = pizza[1]
         if index == 0:
-            if possible_count - selected_pizzas[0] <= capacity:
-                return [items.index(i) for i in selected_pizzas[1:]]
+            if possible_count - item <= capacity:
+                return [i[0] for i in selected_pizzas[index+1:]]
         elif index < len_selected-1:
-            if possible_count - selected_pizzas[index] <= capacity:
-                return [items.index(i) for i in (selected_pizzas[:index] + selected_pizzas[index+1:])]
+            if possible_count - item <= capacity:
+                return [i[0] for i in (selected_pizzas[:index] + selected_pizzas[index+1:])]
         # if at the last item
         else:
-            return [items.index(i) for i in selected_pizzas[:len_selected-1]]
+            return [i[0] for i in selected_pizzas[:len_selected-1]]
 
 
 if __name__ == '__main__':
@@ -38,8 +44,6 @@ if __name__ == '__main__':
 
         result_len = len(result)
         result_string = ' '.join(map(str, result))
-        # print(result_len)
-        # print(result_string)
 
         output_file = open(sys.argv[2], 'w')
         output_file.write("{}\n{}\n".format(result_len, result_string))
